@@ -1,21 +1,31 @@
-
 :root {
     --background-color: #f0f0f0;
     --container-background: #ffffff;
     --primary-color: #4a90e2;
     --text-color: #333333;
-    --ball-color: #ffde00;
     --ball-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --toggle-bg: #e0e0e0;
+}
+
+[data-theme="dark"] {
+    --background-color: #1a1a1a;
+    --container-background: #2c2c2c;
+    --primary-color: #357abd;
+    --text-color: #f0f0f0;
+    --ball-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --toggle-bg: #444444;
 }
 
 body {
     font-family: 'Arial', sans-serif;
     background-color: var(--background-color);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -24,6 +34,8 @@ body {
     padding: 40px;
     border-radius: 16px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: background-color 0.3s ease;
 }
 
 h1 {
@@ -36,20 +48,6 @@ h1 {
     justify-content: center;
     gap: 15px;
     margin-bottom: 40px;
-}
-
-lotto-ball {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    background-color: var(--ball-color);
-    color: var(--text-color);
-    font-size: 24px;
-    font-weight: bold;
-    box-shadow: var(--ball-shadow);
 }
 
 #generate-btn {
@@ -65,4 +63,19 @@ lotto-ball {
 
 #generate-btn:hover {
     background-color: #357abd;
+}
+
+/* 테마 토글 버튼 스타일 */
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: var(--toggle-bg);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
 }

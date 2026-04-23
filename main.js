@@ -1,4 +1,3 @@
-
 class LottoBall extends HTMLElement {
     constructor() {
         super();
@@ -19,7 +18,11 @@ class LottoBall extends HTMLElement {
                 color: white;
                 font-size: 24px;
                 font-weight: bold;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                transition: transform 0.3s ease;
+            }
+            div:hover {
+                transform: scale(1.1);
             }
         `;
         shadow.appendChild(style);
@@ -40,6 +43,25 @@ customElements.define('lotto-ball', LottoBall);
 
 const lottoNumbersContainer = document.getElementById('lotto-numbers');
 const generateBtn = document.getElementById('generate-btn');
+const themeToggle = document.getElementById('theme-toggle');
+
+// 테마 토글 로직
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+updateThemeButton(currentTheme);
+
+themeToggle.addEventListener('click', () => {
+    let theme = document.documentElement.getAttribute('data-theme');
+    let newTheme = theme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeButton(newTheme);
+});
+
+function updateThemeButton(theme) {
+    themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
+}
 
 function generateNumbers() {
     const numbers = new Set();
