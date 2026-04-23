@@ -1,4 +1,4 @@
-// AI News Summarizer Main JS
+// TJ Economy Insight - Full Logic
 const GEMINI_API_KEY = "AIzaSyBFwQ_YAwlxHZWIXMiyqjAwtgH_kBW-m8I";
 const EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/USD";
 
@@ -23,15 +23,20 @@ const termData = [
         id: 2,
         term: '인플레이션 (Inflation)',
         definition: '물가가 계속해서 오르고, 내가 가진 돈의 가치는 떨어지는 현상이에요.',
-        easyExplainer: '작년에는 1,000원으로 과자 한 봉지를 살 수 있었는데, 올해는 과자 값이 올라서 2,000원을 줘야 한다면? 이게 바로 인플레이션이에요.',
-        example: '짜장면 가격이 옛날에는 500원이었는데 지금은 7,000원인 것도 인플레이션의 한 예예요.'
+        easyExplainer: '물건값은 오르고, 내 지갑 속 돈의 힘은 약해진 상황인 거죠.',
+        example: '짜장면 가격이 옛날보다 많이 오른 것이 예예요.'
     }
 ];
 
-async function summarizeNewsWithAI(newsTitle) {
-    const prompt = `Next economy news title summary for kids: "${newsTitle}". Reply ONLY in JSON format: {"summary": [{"text": "line1"}, {"text": "line2"}, {"text": "line3"}], "insight": "easy insight"}`;
+const apartmentData = [
+    { name: '자양호반써밋 (광진구 자양동)', area: '17평', price: '12억 9,000', prevPrice: '11억 5,000', change: '+1억 4,000', date: '2026.04.20' },
+    { name: '헬리오시티 (송파구 가락동)', area: '18평', price: '11억 2,000', prevPrice: '10억 1,000', change: '+1억 1,000', date: '2026.04.22' }
+];
+
+async function summarizeWithAI(title) {
+    const prompt = "경제 뉴스 제목 " + title + "을 초등학생 수준으로 요약해줘. 반드시 다음 JSON 형식으로만 답해: {\"summary\": [{\"text\": \"요약1\"}, {\"text\": \"요약2\"}, {\"text\": \"요약3\"}], \"insight\": \"쉬운 설명\"}";
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -43,15 +48,20 @@ async function summarizeNewsWithAI(newsTitle) {
     } catch (e) { return null; }
 }
 
-async function updateRealTimeNews() {
+async function init() {
+    updateDate();
+    renderMarketBar();
+    fetchMarketData();
+    renderApartments();
+
     const container = document.getElementById('news-grid');
-    if (container) container.innerHTML = "<p style='padding:40px; text-align:center; width:100%; grid-column:1/-1;'>AI 요약 중...</p>";
-    const titles = ["엔비디아 사상 최고가", "한국 물가 안정세", "서울 아파트 거래 회복"];
-    const results = [];
+    if (container) container.innerHTML = "<div style='grid-column:1/-1; padding:50px; text-align:center;'><h3>AI가 뉴스를 분석 중입니다...</h3><p>잠시만 기다려 주세요</p></div>";
+
+    const titles = ["엔비디아 주가 사상 최고치", "한국 물가 안정세 진입", "서울 아파트 거래량 회복"];
     for (let i = 0; i < titles.length; i++) {
-        const res = await summarizeNewsWithAI(titles[i]);
+        const res = await summarizeWithAI(titles[i]);
         if (res) {
-            results.push({
+            newsData.push({
                 id: i,
                 category: i===0?'tech':i===1?'macro':'realestate',
                 categoryName: i===0?'테크/산업':i===1?'거시경제':'부동산',
@@ -60,38 +70,66 @@ async function updateRealTimeNews() {
                 insight: res.insight,
                 isHero: i === 0
             });
+            renderNews();
         }
     }
-    newsData = results;
-    renderNews();
 }
 
 function renderMarketBar() {
     const bar = document.getElementById('market-bar');
     if (!bar) return;
-    const items = marketData.map(d => `<div class="market-item"><span>${d.name}</span> <span>${d.value}</span></div>`).join('');
-    bar.innerHTML = `<div style="display:flex; gap:20px; padding:10px; color:white; background:#2c3e50;">${items}</div>`;
+    const items = marketData.map(d => "<div class='market-item'><span>" + d.name + "</span> <span>" + d.value + "</span></div>").join('');
+    bar.innerHTML = "<div class='market-container' style='display:flex; gap:20px; padding:10px;'>" + items + "</div>";
+}
+
+async function fetchMarketData() {
+    try {
+        const res = await fetch(EXCHANGE_RATE_API);
+        const data = await res.json();
+        marketData[3].value = data.rates.KRW.toFixed(2);
+        renderMarketBar();
+    } catch (e) {}
 }
 
 function renderNews(filter = 'all') {
     const container = document.getElementById('news-grid');
     const hero = document.getElementById('hero-section');
     if (!container || !hero) return;
+
     if (filter === 'terms') {
         hero.style.display = 'none';
-        container.innerHTML = termData.map(t => `<article class="news-card"><h3>${t.term}</h3><p>${t.easyExplainer}</p></article>`).join('');
+        container.innerHTML = termData.map(t => "<article class='news-card'><h3>" + t.term + "</h3><p>" + t.easyExplainer + "</p></article>").join('');
         return;
     }
+
     const filtered = filter === 'all' ? newsData : newsData.filter(n => n.category === filter);
-    hero.innerHTML = filtered.length > 0 && filter === 'all' ? `<h2>${filtered[0].title}</h2><p>${filtered[0].insight}</p>` : '';
-    container.innerHTML = filtered.map(n => `<article class="news-card"><h3>${n.title}</h3><p>${n.insight}</p></article>`).join('');
+    const heroNews = newsData.find(n => n.isHero);
+
+    if (filter === 'all' && heroNews) {
+        hero.style.display = 'block';
+        hero.innerHTML = "<div class='hero-card'><h2>" + heroNews.title + "</h2><div class='insight-box'>" + heroNews.insight + "</div></div>";
+    } else { hero.style.display = 'none'; }
+
+    const gridNews = filter === 'all' ? filtered.filter(n => !n.isHero) : filtered;
+    container.innerHTML = gridNews.map(n => "<article class='news-card'><h3>" + n.title + "</h3><p>" + n.insight + "</p></article>").join('');
+}
+
+function renderApartments() {
+    const list = document.getElementById('apartment-list');
+    if (list) list.innerHTML = apartmentData.map(a => "<div class='apartment-item'>" + a.name + ": " + a.price + "</div>").join('');
+}
+
+function updateDate() {
+    const el = document.getElementById('current-date');
+    if (el) el.textContent = new Date().toLocaleDateString('ko-KR');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderMarketBar();
-    updateRealTimeNews();
+    init();
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
             renderNews(e.target.dataset.category);
         });
     });
