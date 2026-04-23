@@ -29,7 +29,7 @@ const newsData = [
                 url: 'https://www.mk.co.kr/search?word=금리인하+전망' 
             }
         ],
-        insight: '금리 인하가 가시화될 경우 기술주와 성장주에 우호적인 환경이 조성될 것으로 보입니다. 특히 저금리 환경은 기업의 조달 비용을 낮추어 공격적인 투자를 가능케 합니다. 다만, 연준이 금리 인하를 서두르는 이유가 인플레이션 둔화가 아닌 경기 침체(Recession) 때문이라면 시장은 오히려 하락할 수 있으므로, 고용 지표의 급격한 악화 여부를 면밀히 주시해야 합니다.',
+        insight: '쉽게 말해, 은행 이자가 내려갈 것 같다는 기대감 때문에 사람들이 주식 시장으로 모이고 있어요. 이자가 낮아지면 기업들이 돈을 빌려 사업하기 좋아지기 때문이죠. 하지만 나라 경제가 너무 안 좋아서 금리를 내리는 것이라면 오히려 주가가 떨어질 수도 있으니, 사람들이 일자리를 잘 유지하고 있는지(고용 지표)를 함께 지켜봐야 합니다.',
         isHero: true
     },
     {
@@ -54,7 +54,7 @@ const newsData = [
                 url: 'https://www.hankyung.com/search?query=반도체+소부장' 
             }
         ],
-        insight: 'AI는 단순한 테마를 넘어 산업 전반의 효율성을 혁신하는 거대한 패러다임 변화입니다. 현재 반도체 섹터의 상승은 기대감을 넘어 실제 수주와 실적으로 증명되고 있습니다. 투자자들은 이제 막연한 성장성보다는 고대역폭메모리(HBM)나 미세 공정 장비 등 기술적 진입장벽이 높은 핵심 공급망 기업 위주로 포트폴리오를 재편하여 장기적인 이익 성장을 누려야 할 시기입니다.'
+        insight: '인공지능(AI) 열풍이 불면서 똑똑한 기계를 만드는 데 꼭 필요한 "반도체"가 엄청나게 팔리고 있어요. 단순히 기대감이 아니라 실제로 돈을 많이 벌고 있다는 게 확인되고 있죠. 앞으로는 반도체를 만드는 큰 회사뿐만 아니라, 그 회사에 부품이나 장비를 대주는 작은 회사들의 성적표도 꼼꼼히 챙겨보는 것이 중요합니다.'
     },
     {
         id: 3,
@@ -78,7 +78,7 @@ const newsData = [
                 url: 'https://www.mk.co.kr/search?word=실거주+의무+유예' 
             }
         ],
-        insight: '서울 주요 지역의 거래량 증가는 가격 하락 압력이 줄어들고 있다는 긍정적인 신호로 해석될 수 있습니다. 그러나 여전히 높은 금리 수준과 대출 규제가 유지되고 있어, 2021년과 같은 전방위적 폭등보다는 선호 지역과 비선호 지역 간의 가치 양극화가 심화될 가능성이 큽니다. 무리한 영끌 투자보다는 입지 가치가 확실한 곳으로의 선별적 접근이 필요하며, 향후 공급 물량 추이를 살피며 신중히 매수 타이밍을 조절해야 합니다.'
+        insight: '집을 사려는 사람들이 조금씩 늘어나고 있지만, 예전처럼 모든 동네의 집값이 다 오르는 시기는 아니에요. 사람들이 정말 살고 싶어 하는 인기 지역 위주로만 거래가 되고 있죠. 대출 이자가 여전히 부담스럽기 때문에, 무리하게 빚을 내서 집을 사기보다는 정부에서 지원해 주는 저금리 대출 상품을 활용할 수 있는지 먼저 따져보는 게 좋습니다.'
     },
     {
         id: 4,
@@ -102,31 +102,38 @@ const newsData = [
                 url: 'https://www.hankyung.com/search?query=스마트폰+교체주기' 
             }
         ],
-        insight: '온디바이스 AI 시장의 개화는 침체되었던 스마트폰 하드웨어 시장에 강력한 교체 수요를 자극할 촉매제입니다. 애플과 구글의 경쟁은 단순한 소프트웨어 대결을 넘어 전용 AI 칩셋 설계 능력과 저전력 구동 기술 등 하드웨어 기술 경쟁으로 확산될 것입니다. 이는 결국 고성능 NPU를 설계하는 팹리스와 이를 제조하는 파운드리, 그리고 고용량 모바일 DRAM 수요를 자극하여 테크 밸류체인 전반의 이익 체력을 한 단계 끌어올리는 결과를 낳을 것입니다.'
+        insight: '이제 내 스마트폰 안에 똑똑한 비서(AI)가 직접 들어오는 시대가 열리고 있어요. 예전에는 인터넷이 연결되어야만 AI를 쓸 수 있었다면, 앞으로는 인터넷 없이도 폰 자체가 스스로 생각하게 되는 거죠. 이 기능을 쓰려면 성능 좋은 최신 폰이 필요하기 때문에, 정체되었던 스마트폰 판매량이 다시 늘어날 수 있고 관련 부품 회사들도 바빠질 것으로 보여요.'
+    }
+];
+
+const termData = [
+    {
+        id: 1,
+        term: '금리 (Interest Rate)',
+        definition: '남에게 돈을 빌린 대가로 치르는 이자의 비율이에요.',
+        easyExplainer: '쉽게 생각하면 **"돈의 가격"**이에요. 금리가 높으면 돈을 빌리는 값이 비싸지는 거고, 금리가 낮으면 돈을 빌리는 값이 싸지는 거예요. 금리가 낮아지면 사람들이 돈을 빌려 쇼핑도 하고 사업도 하기 좋아져서 경제가 북적북적해진답니다.',
+        example: '은행에 예금을 할 때 받는 이자나, 집을 살 때 빌린 돈에 대해 내는 이자가 모두 금리에 따라 결정돼요.'
     },
     {
-        id: 5,
-        category: 'macro',
-        categoryName: '거시경제',
-        title: '엔저 현상 심화, 일본 수출 기업에는 호재 vs 가계엔 부담',
-        summary: [
-            { 
-                text: '달러당 엔화 가치 34년 만에 최저치 경신', 
-                detail: '미국과 일본의 금리 차이가 좁혀지지 않으면서 엔화 매도세가 이어지고 있습니다. 이는 일본 증시의 수출 대형주들에게는 엄청난 이익 증가 요인입니다.',
-                url: 'https://www.mk.co.kr/search?word=엔저+심화' 
-            },
-            { 
-                text: '일본 은행(BOJ)의 개입 가능성에도 약세 지속', 
-                detail: '일본 정부의 구두 개입과 실제 외환 시장 개입 흔적에도 불구하고, 근본적인 금리 차이가 해결되지 않아 엔저 흐름을 되돌리기엔 역부족인 상황입니다.',
-                url: 'https://www.hankyung.com/search?query=일본은행+개입' 
-            },
-            { 
-                text: '한국 수출 경합 품목의 가격 경쟁력 약화 우려', 
-                detail: '자동차, 기계 등 글로벌 시장에서 일본과 경쟁하는 한국 기업들은 엔저로 인한 일본 제품의 가격 경쟁력 강화에 따른 점유율 하락을 우려하고 있습니다.',
-                url: 'https://www.mk.co.kr/search?word=엔저+한국수출' 
-            }
-        ],
-        insight: '역대급 엔저는 글로벌 자산 배분 측면에서 일본 증시의 매력도를 높이는 요소지만, 한국 경제에는 상당한 도전 과제입니다. 특히 자동차와 철강 등 일본과 경합하는 품목에서 수출 채산성 악화나 점유율 하락이 우려되는 상황입니다. 투자자들은 엔화 환노출 상품이나 일본 수출 우량주에 관심을 가짐과 동시에, 원/엔 환율 변동이 국내 주요 수출 기업의 분기 실적에 미칠 부정적 영향을 미리 점검하고 방어적인 포트폴리오 전략을 고민해야 합니다.'
+        id: 2,
+        term: '인플레이션 (Inflation)',
+        definition: '물가가 계속해서 오르고, 내가 가진 돈의 가치는 떨어지는 현상이에요.',
+        easyExplainer: '작년에는 1,000원으로 과자 한 봉지를 살 수 있었는데, 올해는 과자 값이 올라서 2,000원을 줘야 한다면? 이게 바로 인플레이션이에요. 물건값은 오르고, 내 지갑 속 1,000원의 힘은 약해진 상황인 거죠.',
+        example: '짜장면 가격이 옛날에는 500원이었는데 지금은 7,000원인 것도 인플레이션의 한 예예요.'
+    },
+    {
+        id: 3,
+        term: '공매도 (Short Selling)',
+        definition: '주식이 없는 상태에서 주식을 빌려 팔고, 나중에 가격이 떨어지면 사서 갚는 방식이에요.',
+        easyExplainer: '주가가 **내려갈 것 같을 때** 돈을 버는 방법이에요. 예를 들어, 1만원짜리 주식을 빌려서 일단 팔아요(내 손엔 1만원이 생기죠). 나중에 주가가 7천원으로 떨어지면, 그때 주식을 사서 원래 주인에게 갚아요. 그럼 나는 가만히 앉아서 3천원을 벌게 되는 구조랍니다.',
+        example: '주가 거품을 빼는 역할도 하지만, 주가를 억지로 떨어뜨린다는 비판을 받기도 해요.'
+    },
+    {
+        id: 4,
+        term: 'GDP (국내총생산)',
+        definition: '한 나라 안에서 일정 기간 동안 만들어낸 물건과 서비스의 총 가치예요.',
+        easyExplainer: '우리나라라는 커다란 공장에서 일 년 동안 얼마나 많은 가치를 만들어냈는지 보여주는 **"나라의 성적표"**라고 보면 돼요. GDP가 작년보다 늘어났다면 우리 나라 경제가 쑥쑥 성장하고 있다는 뜻이에요.',
+        example: '삼성이 만든 반도체, 동네 미용실의 파마 서비스 등이 모두 GDP에 포함돼요.'
     }
 ];
 
@@ -137,14 +144,12 @@ const categoryButtons = document.querySelectorAll('.nav-item');
 const themeToggle = document.getElementById('theme-toggle');
 const currentDateElement = document.getElementById('current-date');
 
-// Modal Elements
 const modal = document.getElementById('detail-modal');
 const modalBody = document.getElementById('modal-body');
 const closeModal = document.querySelector('.close-modal');
 
 const lastUpdatedTime = "2026.04.23 15:30";
 
-// 지수 바 렌더링
 function renderMarketBar() {
     const indicesHtml = marketData.map(item => `
         <div class="market-item">
@@ -166,14 +171,12 @@ function renderMarketBar() {
     `;
 }
 
-// 날짜 업데이트
 function updateDate() {
     const now = new Date();
     const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
     currentDateElement.textContent = now.toLocaleDateString('ko-KR', options);
 }
 
-// 모달 열기
 function openDetailModal(newsId, summaryIndex) {
     const news = newsData.find(n => n.id === newsId);
     if (!news) return;
@@ -191,10 +194,9 @@ function openDetailModal(newsId, summaryIndex) {
         </div>
     `;
     modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // 스크롤 방지
+    document.body.style.overflow = 'hidden';
 }
 
-// 모달 닫기
 closeModal.onclick = function() {
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -207,11 +209,14 @@ window.onclick = function(event) {
     }
 }
 
-// 뉴스 렌더링
 function renderNews(filter = 'all') {
+    if (filter === 'terms') {
+        renderTerms();
+        return;
+    }
+
     const filteredNews = filter === 'all' ? newsData : newsData.filter(item => item.category === filter);
     
-    // Hero 뉴스 렌더링
     const heroNews = newsData.find(item => item.isHero);
     if (filter === 'all' && heroNews) {
         heroContainer.innerHTML = `
@@ -227,7 +232,7 @@ function renderNews(filter = 'all') {
                         `).join('')}
                     </ul>
                     <div class="insight-box">
-                        <span class="insight-label">Insight</span>
+                        <span class="insight-label">💡 이해하기 쉬운 핵심 포인트</span>
                         <p>${heroNews.insight}</p>
                     </div>
                 </div>
@@ -238,7 +243,6 @@ function renderNews(filter = 'all') {
         heroContainer.style.display = 'none';
     }
 
-    // Grid 뉴스 렌더링
     const gridNews = filter === 'all' ? newsData.filter(item => !item.isHero) : filteredNews;
     newsGrid.innerHTML = gridNews.map(item => `
         <article class="news-card">
@@ -252,17 +256,35 @@ function renderNews(filter = 'all') {
                 `).join('')}
             </ul>
             <div class="insight-box">
-                <span class="insight-label">Insight</span>
+                <span class="insight-label">💡 이해하기 쉬운 핵심 포인트</span>
                 <p>${item.insight}</p>
             </div>
         </article>
     `).join('');
 }
 
-// 전역 함수로 등록 (onclick 호출용)
+function renderTerms() {
+    heroContainer.style.display = 'none';
+    newsGrid.innerHTML = termData.map(item => `
+        <article class="news-card term-card">
+            <span class="category-tag" style="background: #e67e22; color: white;">오늘의 용어</span>
+            <h3 class="news-title">${item.term}</h3>
+            <p class="term-definition" style="font-weight: 600; color: #2c3e50; margin-bottom: 12px; font-size: 15px;">
+                ${item.definition}
+            </p>
+            <div class="insight-box" style="background: #fdf2e9; border-left-color: #e67e22;">
+                <span class="insight-label" style="color: #d35400;">💬 더 쉬운 설명</span>
+                <p style="color: #5d4037;">${item.easyExplainer}</p>
+            </div>
+            <div style="margin-top: 15px; font-size: 13px; color: #7f8c8d; font-style: italic;">
+                예시: ${item.example}
+            </div>
+        </article>
+    `).join('');
+}
+
 window.openDetailModal = openDetailModal;
 
-// 카테고리 클릭 이벤트
 categoryButtons.forEach(button => {
     button.addEventListener('click', () => {
         categoryButtons.forEach(btn => btn.classList.remove('active'));
@@ -271,7 +293,6 @@ categoryButtons.forEach(button => {
     });
 });
 
-// 테마 토글
 const currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
 updateThemeButton(currentTheme);
@@ -339,7 +360,6 @@ const apartmentData = [
 
 const apartmentListContainer = document.getElementById('apartment-list');
 
-// 아파트 신고가 리스트 렌더링
 function renderApartmentList() {
     if (!apartmentListContainer) return;
     
@@ -368,7 +388,6 @@ function renderApartmentList() {
     `).join('');
 }
 
-// 초기화
 renderMarketBar();
 updateDate();
 renderNews();
