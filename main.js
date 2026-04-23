@@ -289,7 +289,32 @@ function updateThemeButton(theme) {
     themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
 }
 
+const apartmentData = [
+    { name: '자양호반써밋 (광진구 자양동)', area: '40㎡', price: '12억 9,000', date: '2026.04.06' },
+    { name: '삼선푸르지오 (성북구 삼선동)', area: '59㎡', price: '9억 5,000', date: '2026.04.12' },
+    { name: '헬리오시티 (송파구 가락동)', area: '39㎡', price: '11억 2,000', date: '2026.04.15' },
+    { name: '관악드림타운 (관악구 봉천동)', area: '84㎡', price: '10억 8,000', date: '2026.04.18' },
+    { name: '상계주공7단지 (노원구 상계동)', area: '45㎡', price: '7억 4,000', date: '2026.04.20' }
+];
+
+const apartmentListContainer = document.getElementById('apartment-list');
+
+// 아파트 신고가 리스트 렌더링
+function renderApartmentList() {
+    if (!apartmentListContainer) return;
+    
+    apartmentListContainer.innerHTML = apartmentData.map(item => `
+        <div class="apartment-item">
+            <span class="apt-name">${item.name}</span>
+            <span class="apt-area">${item.area}</span>
+            <span class="apt-price">${item.price}</span>
+            <span class="apt-date">${item.date}</span>
+        </div>
+    `).join('');
+}
+
 // 초기화
 renderMarketBar();
 updateDate();
 renderNews();
+renderApartmentList();
