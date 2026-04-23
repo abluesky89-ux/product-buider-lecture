@@ -1,9 +1,9 @@
 const marketData = [
-    { name: 'KOSPI', value: '2,754.89', change: '+0.42%', up: true },
-    { name: 'KOSDAQ', value: '891.56', change: '-0.15%', up: false },
-    { name: 'NASDAQ', value: '16,384.47', change: '+1.10%', up: true },
-    { name: 'S&P 500', value: '5,248.49', change: '+0.86%', up: true },
-    { name: '환율(USD/KRW)', value: '1,342.50', change: '+0.22%', up: true }
+    { name: 'KOSPI', value: '6,475.81', change: '+0.90%', up: true },
+    { name: 'KOSDAQ', value: '1,174.31', change: '-0.58%', up: false },
+    { name: 'NASDAQ', value: '24,657.57', change: '+1.64%', up: true },
+    { name: 'S&P 500', value: '7,137.90', change: '+1.05%', up: true },
+    { name: '환율(USD/KRW)', value: '1,481.65', change: '+0.38%', up: true }
 ];
 
 const newsData = [
@@ -142,15 +142,28 @@ const modal = document.getElementById('detail-modal');
 const modalBody = document.getElementById('modal-body');
 const closeModal = document.querySelector('.close-modal');
 
+const lastUpdatedTime = "2026.04.23 15:30";
+
 // 지수 바 렌더링
 function renderMarketBar() {
-    marketBar.innerHTML = marketData.map(item => `
+    const indicesHtml = marketData.map(item => `
         <div class="market-item">
             <span class="market-label">${item.name}</span>
             <span class="market-value">${item.value}</span>
             <span class="market-change ${item.up ? 'up' : 'down'}">${item.change}</span>
         </div>
     `).join('');
+    
+    marketBar.innerHTML = `
+        <div class="market-container" style="display: flex; width: 100%; max-width: 1000px; margin: 0 auto; align-items: center; justify-content: space-between; padding: 0 20px;">
+            <div class="market-scroll-area" style="display: flex; gap: 25px; overflow-x: auto; scrollbar-width: none;">
+                ${indicesHtml}
+            </div>
+            <div class="market-timestamp" style="font-size: 11px; color: #bdc3c7; white-space: nowrap; margin-left: 20px;">
+                최종 업데이트: ${lastUpdatedTime}
+            </div>
+        </div>
+    `;
 }
 
 // 날짜 업데이트
