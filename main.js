@@ -187,9 +187,8 @@ function openDetailModal(newsId, summaryIndex) {
             ${summary.detail}
         </div>
         <div style="margin-top: 20px; font-size: 14px; color: #666;">
-            * 이 내용은 TaeJin's Economy Insight AI가 정리한 핵심 요약입니다.
+            * 이 내용은 TJ Economy Insight가 정리한 핵심 요약입니다.
         </div>
-        <a href="${summary.url}" target="_blank" class="modal-link-btn">관련 기사 원문 보기</a>
     `;
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden'; // 스크롤 방지
@@ -228,7 +227,7 @@ function renderNews(filter = 'all') {
                         `).join('')}
                     </ul>
                     <div class="insight-box">
-                        <span class="insight-label">AI Insight</span>
+                        <span class="insight-label">Insight</span>
                         <p>${heroNews.insight}</p>
                     </div>
                 </div>
