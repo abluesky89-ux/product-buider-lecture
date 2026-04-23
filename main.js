@@ -290,11 +290,51 @@ function updateThemeButton(theme) {
 }
 
 const apartmentData = [
-    { name: '자양호반써밋 (광진구 자양동)', area: '40㎡', price: '12억 9,000', date: '2026.04.06' },
-    { name: '삼선푸르지오 (성북구 삼선동)', area: '59㎡', price: '9억 5,000', date: '2026.04.12' },
-    { name: '헬리오시티 (송파구 가락동)', area: '39㎡', price: '11억 2,000', date: '2026.04.15' },
-    { name: '관악드림타운 (관악구 봉천동)', area: '84㎡', price: '10억 8,000', date: '2026.04.18' },
-    { name: '상계주공7단지 (노원구 상계동)', area: '45㎡', price: '7억 4,000', date: '2026.04.20' }
+    { 
+        name: '자양호반써밋 (광진구 자양동)', 
+        area: '40㎡ (12평)', 
+        price: '12억 9,000', 
+        prevPrice: '11억 5,000',
+        change: '+1억 4,000 (12.1%)',
+        pyeongPrice: '1억 750만',
+        date: '2026.04.06' 
+    },
+    { 
+        name: '삼선푸르지오 (성북구 삼선동)', 
+        area: '59㎡ (24평)', 
+        price: '9억 5,000', 
+        prevPrice: '8억 7,000',
+        change: '+8,000 (9.2%)',
+        pyeongPrice: '3,958만',
+        date: '2026.04.12' 
+    },
+    { 
+        name: '헬리오시티 (송파구 가락동)', 
+        area: '39㎡ (13평)', 
+        price: '11억 2,000', 
+        prevPrice: '10억 1,000',
+        change: '+1억 1,000 (10.9%)',
+        pyeongPrice: '8,615만',
+        date: '2026.04.15' 
+    },
+    { 
+        name: '관악드림타운 (관악구 봉천동)', 
+        area: '84㎡ (32평)', 
+        price: '10억 8,000', 
+        prevPrice: '9억 9,000',
+        change: '+9,000 (9.1%)',
+        pyeongPrice: '3,375만',
+        date: '2026.04.18' 
+    },
+    { 
+        name: '상계주공7단지 (노원구 상계동)', 
+        area: '45㎡ (18평)', 
+        price: '7억 4,000', 
+        prevPrice: '6억 8,000',
+        change: '+6,000 (8.8%)',
+        pyeongPrice: '4,111만',
+        date: '2026.04.20' 
+    }
 ];
 
 const apartmentListContainer = document.getElementById('apartment-list');
@@ -305,9 +345,24 @@ function renderApartmentList() {
     
     apartmentListContainer.innerHTML = apartmentData.map(item => `
         <div class="apartment-item">
-            <span class="apt-name">${item.name}</span>
-            <span class="apt-area">${item.area}</span>
-            <span class="apt-price">${item.price}</span>
+            <div class="apt-main-info">
+                <span class="apt-name">${item.name}</span>
+                <span class="apt-area">${item.area}</span>
+            </div>
+            <div class="apt-price-info">
+                <div class="current-price">
+                    <span class="label">신고가</span>
+                    <span class="value">${item.price}</span>
+                </div>
+                <div class="prev-price">
+                    <span class="label">직전가</span>
+                    <span class="value">${item.prevPrice}</span>
+                </div>
+            </div>
+            <div class="apt-change-info">
+                <span class="price-change">${item.change}</span>
+                <span class="pyeong-price">평당 ${item.pyeongPrice}</span>
+            </div>
             <span class="apt-date">${item.date}</span>
         </div>
     `).join('');

@@ -365,7 +365,7 @@ body {
 
 .apartment-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr 1fr;
+    grid-template-columns: 2fr 1.5fr 1.5fr 0.8fr;
     align-items: center;
     padding: 15px;
     border-bottom: 1px solid var(--border-color);
@@ -380,6 +380,11 @@ body {
     background-color: var(--header-bg);
 }
 
+.apt-main-info {
+    display: flex;
+    flex-direction: column;
+}
+
 .apt-name {
     font-weight: 700;
     font-size: 15px;
@@ -390,10 +395,40 @@ body {
     font-size: 13px;
 }
 
-.apt-price {
-    font-weight: 800;
-    color: var(--accent-color);
+.apt-price-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.current-price, .prev-price {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.current-price .label { color: var(--accent-color); font-weight: 800; }
+.current-price .value { font-weight: 800; }
+.prev-price .label { color: var(--secondary-text); }
+.prev-price .value { color: var(--secondary-text); text-decoration: line-through; }
+
+.apt-change-info {
+    display: flex;
+    flex-direction: column;
     text-align: right;
+    padding-right: 20px;
+}
+
+.price-change {
+    font-weight: 800;
+    color: var(--up-color);
+    font-size: 14px;
+}
+
+.pyeong-price {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 .apt-date {
@@ -533,6 +568,23 @@ body {
     padding-top: 30px;
 }
 
+@media (max-width: 850px) {
+    .apartment-item {
+        grid-template-columns: 1.2fr 1fr;
+        gap: 15px;
+    }
+    .apt-change-info {
+        text-align: left;
+        padding-right: 0;
+    }
+    .apt-date {
+        grid-column: span 2;
+        text-align: left;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 5px;
+    }
+}
+
 @media (max-width: 600px) {
     .newsletter-form {
         flex-direction: column;
@@ -544,12 +596,4 @@ body {
         justify-content: flex-start;
         padding-left: 20px;
     }
-    .apartment-item {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    .apt-name { grid-column: span 2; }
-    .apt-area { grid-column: 1; }
-    .apt-price { grid-column: 2; }
-    .apt-date { grid-column: span 2; text-align: left; }
 }
