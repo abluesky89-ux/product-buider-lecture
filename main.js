@@ -1,47 +1,21 @@
-// TJ Economy Insight - Full Logic
 const GEMINI_API_KEY = "AIzaSyBFwQ_YAwlxHZWIXMiyqjAwtgH_kBW-m8I";
 const EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/USD";
 
-let marketData = [
-    { name: 'KOSPI', value: '2,647.50', change: '+0.45%', up: true },
-    { name: 'KOSDAQ', value: '862.10', change: '-0.12%', up: false },
-    { name: 'NASDAQ', value: '16,274.90', change: '+1.10%', up: true },
-    { name: '환율(USD/KRW)', value: '로딩 중...', change: '-', up: true }
-];
-
 let newsData = [];
-
 const termData = [
-    {
-        id: 1,
-        term: '금리 (Interest Rate)',
-        definition: '남에게 돈을 빌린 대가로 치르는 이자의 비율이에요.',
-        easyExplainer: '쉽게 생각하면 "돈의 가격"이에요. 금리가 높으면 돈을 빌리는 값이 비싸지는 거고, 금리가 낮으면 돈을 빌리는 값이 싸지는 거예요.',
-        example: '은행 예금 이자나 대출 이자가 대표적이에요.'
-    },
-    {
-        id: 2,
-        term: '인플레이션 (Inflation)',
-        definition: '물가가 계속해서 오르고, 내가 가진 돈의 가치는 떨어지는 현상이에요.',
-        easyExplainer: '물건값은 오르고, 내 지갑 속 돈의 힘은 약해진 상황인 거죠.',
-        example: '짜장면 가격이 옛날보다 많이 오른 것이 예예요.'
-    }
-];
-
-const apartmentData = [
-    { name: '자양호반써밋 (광진구 자양동)', area: '17평', price: '12억 9,000', prevPrice: '11억 5,000', change: '+1억 4,000', date: '2026.04.20' },
-    { name: '헬리오시티 (송파구 가락동)', area: '18평', price: '11억 2,000', prevPrice: '10억 1,000', change: '+1억 1,000', date: '2026.04.22' }
+    { id: 1, term: '금리', definition: '돈을 빌린 대가로 내는 이자의 비율', easyExplainer: '돈의 가격이라고 생각하면 쉬워요.' },
+    { id: 2, term: '인플레이션', definition: '물가가 오르고 돈의 가치가 떨어지는 현상', easyExplainer: '과자값이 오르는 게 인플레이션이에요.' }
 ];
 
 async function summarizeWithAI(title) {
-    const prompt = "경제 뉴스 제목 " + title + "을 초등학생 수준으로 요약해줘. 반드시 다음 JSON 형식으로만 답해: {\"summary\": [{\"text\": \"요약1\"}, {\"text\": \"요약2\"}, {\"text\": \"요약3\"}], \"insight\": \"쉬운 설명\"}";
+    const prompt = `News: "${title}". 초등학생 수준 요약. JSON format ONLY: {"summary": [{"text": "요약1"}, {"text": "요약2"}, {"text": "요약3"}], "insight": "핵심설명"}`;
     try {
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
-        const data = await response.json();
+        const data = await res.json();
         const text = data.candidates[0].content.parts[0].text;
         const match = text.match(/\{[\s\S]*\}/);
         return match ? JSON.parse(match[0]) : null;
@@ -50,45 +24,22 @@ async function summarizeWithAI(title) {
 
 async function init() {
     updateDate();
-    renderMarketBar();
     fetchMarketData();
-    renderApartments();
-
+    const titles = ["엔비디아 역대 최고가 경신", "한국 물가 상승폭 둔화", "서울 아파트 거래량 증가"];
     const container = document.getElementById('news-grid');
-    if (container) container.innerHTML = "<div style='grid-column:1/-1; padding:50px; text-align:center;'><h3>AI가 뉴스를 분석 중입니다...</h3><p>잠시만 기다려 주세요</p></div>";
-
-    const titles = ["엔비디아 주가 사상 최고치", "한국 물가 안정세 진입", "서울 아파트 거래량 회복"];
+    if (container) container.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>고품질 뉴스를 분석 중입니다...</p>";
+    
     for (let i = 0; i < titles.length; i++) {
         const res = await summarizeWithAI(titles[i]);
         if (res) {
             newsData.push({
-                id: i,
-                category: i===0?'tech':i===1?'macro':'realestate',
+                id: i, category: i===0?'tech':i===1?'macro':'realestate',
                 categoryName: i===0?'테크/산업':i===1?'거시경제':'부동산',
-                title: titles[i],
-                summary: res.summary,
-                insight: res.insight,
-                isHero: i === 0
+                title: titles[i], summary: res.summary, insight: res.insight, isHero: i === 0
             });
             renderNews();
         }
     }
-}
-
-function renderMarketBar() {
-    const bar = document.getElementById('market-bar');
-    if (!bar) return;
-    const items = marketData.map(d => "<div class='market-item'><span>" + d.name + "</span> <span>" + d.value + "</span></div>").join('');
-    bar.innerHTML = "<div class='market-container' style='display:flex; gap:20px; padding:10px;'>" + items + "</div>";
-}
-
-async function fetchMarketData() {
-    try {
-        const res = await fetch(EXCHANGE_RATE_API);
-        const data = await res.json();
-        marketData[3].value = data.rates.KRW.toFixed(2);
-        renderMarketBar();
-    } catch (e) {}
 }
 
 function renderNews(filter = 'all') {
@@ -98,39 +49,59 @@ function renderNews(filter = 'all') {
 
     if (filter === 'terms') {
         hero.style.display = 'none';
-        container.innerHTML = termData.map(t => "<article class='news-card'><h3>" + t.term + "</h3><p>" + t.easyExplainer + "</p></article>").join('');
+        container.innerHTML = termData.map(t => `<article class="news-card"><h3>${t.term}</h3><p>${t.easyExplainer}</p></article>`).join('');
         return;
     }
 
     const filtered = filter === 'all' ? newsData : newsData.filter(n => n.category === filter);
     const heroNews = newsData.find(n => n.isHero);
-
     if (filter === 'all' && heroNews) {
         hero.style.display = 'block';
-        hero.innerHTML = "<div class='hero-card'><h2>" + heroNews.title + "</h2><div class='insight-box'>" + heroNews.insight + "</div></div>";
+        hero.innerHTML = `<div class="hero-card"><h2>${heroNews.title}</h2><div class="insight-box">${heroNews.insight}</div></div>`;
     } else { hero.style.display = 'none'; }
-
-    const gridNews = filter === 'all' ? filtered.filter(n => !n.isHero) : filtered;
-    container.innerHTML = gridNews.map(n => "<article class='news-card'><h3>" + n.title + "</h3><p>" + n.insight + "</p></article>").join('');
+    
+    container.innerHTML = filtered.filter(n => filter !== 'all' || !n.isHero).map(n => `
+        <article class="news-card">
+            <span class="category-tag">${n.categoryName}</span>
+            <h3>${n.title}</h3>
+            <ul style="margin:10px 0; padding-left:20px;">${n.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
+            <div class="insight-box"><p>${n.insight}</p></div>
+        </article>`).join('');
 }
 
-function renderApartments() {
-    const list = document.getElementById('apartment-list');
-    if (list) list.innerHTML = apartmentData.map(a => "<div class='apartment-item'>" + a.name + ": " + a.price + "</div>").join('');
+function fetchMarketData() {
+    fetch(EXCHANGE_RATE_API).then(res => res.json()).then(data => {
+        const bar = document.getElementById('market-bar');
+        if (bar) bar.innerHTML = `<div style="text-align:center;font-size:12px;">실시간 환율: 1달러 = ${data.rates.KRW.toFixed(2)}원 (제공: Open API)</div>`;
+    });
 }
 
 function updateDate() {
     const el = document.getElementById('current-date');
-    if (el) el.textContent = new Date().toLocaleDateString('ko-KR');
+    if (el) el.textContent = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            renderNews(e.target.dataset.category);
-        });
+// 정책 팝업 함수
+window.showPolicy = function(type) {
+    const modal = document.getElementById('detail-modal');
+    const body = document.getElementById('modal-body');
+    const content = {
+        about: "<h2>서비스 소개</h2><p>TJ Economy Insight는 AI 기술을 활용하여 복잡한 경제 뉴스를 누구나 이해하기 쉽게 요약하여 전달하는 혁신적인 뉴스 플랫폼입니다. 매일 수천 건의 기사 중 가장 중요한 이슈를 엄선합니다.</p>",
+        privacy: "<h2>개인정보처리방침</h2><p>본 서비스는 사용자의 개인정보를 수집하지 않습니다. 뉴스레터 구독 시 입력하는 이메일은 오직 뉴스레터 전송 목적으로만 사용되며 안전하게 보호됩니다.</p>",
+        terms: "<h2>이용약관</h2><p>TJ Economy Insight에서 제공하는 모든 정보는 참고용입니다. 투자 및 경제 활동에 대한 최종 결정은 본인에게 있으며, 당사는 정보의 정확성을 위해 최선을 다하나 결과에 책임을 지지 않습니다.</p>",
+        contact: "<h2>문의하기</h2><p>서비스 이용 관련 문의는 다음 이메일로 연락주시기 바랍니다.<br>Email: contact@tjinsight.com</p>"
+    };
+    body.innerHTML = content[type] || "내용을 찾을 수 없습니다.";
+    modal.style.display = 'block';
+};
+
+document.querySelector('.close-modal').onclick = () => { document.getElementById('detail-modal').style.display = 'none'; };
+
+document.addEventListener('DOMContentLoaded', init);
+document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderNews(e.target.dataset.category);
     });
 });
