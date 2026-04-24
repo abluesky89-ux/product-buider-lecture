@@ -19,21 +19,28 @@ const newsTitles = [
 async function summarizeWithAI(item, index) {
     const prompt = `News: "${item.title}". 초등학생 수준 요약. JSON format ONLY: {"summary": [{"text": "요약1"}, {"text": "요약2"}, {"text": "요약3"}], "insight": "기사 내용을 아주 쉽게 풀어서 투자자나 일반인에게 주는 실질적인 조언이나 관점(인사이트)을 작성해줘"}`;
     try {
-        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
-        const data = await response = await res.json();
-        const text = data.candidates[0].content.parts[0].text;
-        const match = text.match(/\{[\s\S]*\}/);
-        if (match) {
-            const result = JSON.parse(match[0]);
-            return {
-                id: index, category: item.cat, categoryName: item.catName,
-                title: item.title, summary: result.summary, insight: result.insight, isHero: index === 0
-            };
+        const data = await res.json();
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            const text = data.candidates[0].content.parts[0].text;
+            const match = text.match(/\{[\s\S]*\}/);
+            if (match) {
+                const result = JSON.parse(match[0]);
+                return {
+                    id: index, category: item.cat, categoryName: item.catName,
+                    title: item.title, summary: result.summary, insight: result.insight, isHero: index === 0
+                };
+            }
         }
-    } catch (e) { return null; }
+        return null;
+    } catch (e) {
+        console.error("AI Error:", e);
+        return null;
+    }
 }
 
 async function init() {
@@ -42,17 +49,16 @@ async function init() {
     const container = document.getElementById('news-grid');
     if (container) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:40px;'><h3>실시간 AI 인사이트를 도출하고 있습니다...</h3><p>병렬 분석 기술로 속도를 높이는 중입니다. (약 3~5초)</p></div>";
 
-    // 병렬 실행 (Promise.all) 으로 속도 최적화
     const promises = newsTitles.map((item, idx) => summarizeWithAI(item, idx));
     const results = await Promise.all(promises);
     
     newsData = results.filter(r => r !== null);
     
     if (newsData.length === 0) {
-        // 모든 AI 호출 실패 시 기본 데이터 로드 (백업)
         newsData = newsTitles.map((item, idx) => ({
             id: idx, category: item.cat, categoryName: item.catName, title: item.title,
-            summary: [{text: '데이터를 불러오는 중입니다.'}], insight: '현재 기사 분석이 지연되고 있습니다. 잠시 후 새로고침 해주세요.', isHero: idx === 0
+            summary: [{text: '현재 실시간 분석이 일시적으로 지연되고 있습니다.'}], 
+            insight: '새로고침을 하거나 잠시 후 다시 접속해주세요.', isHero: idx === 0
         }));
     }
     renderNews();
@@ -78,7 +84,7 @@ function renderNews(filter = 'all') {
             <div class="hero-card">
                 <div class="hero-content">
                     <span class="hero-category">${heroNews.categoryName}</span>
-                    <h2 style="margin:10px 0;">${heroNews.title}</h2>
+                    <h2 style="margin:10px 0; font-size: 24px;">${heroNews.title}</h2>
                     <ul style="margin-bottom:15px; padding-left:20px;">${heroNews.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
                     <div class="insight-box" style="background: #eef2f7; border-left: 5px solid #3498db;">
                         <b>📢 AI 인사이트:</b> ${heroNews.insight}
@@ -91,9 +97,9 @@ function renderNews(filter = 'all') {
     container.innerHTML = gridNews.map(n => `
         <article class="news-card">
             <span class="category-tag">${n.categoryName}</span>
-            <h3 style="margin:10px 0;">${n.title}</h3>
-            <ul style="margin-bottom:15px; padding-left:20px; color: #555;">${n.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
-            <div class="insight-box">
+            <h3 style="margin:10px 0; font-size: 18px;">${n.title}</h3>
+            <ul style="margin-bottom:15px; padding-left:20px; color: #555; font-size:14px;">${n.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
+            <div class="insight-box" style="font-size:14px;">
                 <b>📢 AI 인사이트:</b><br>${n.insight}
             </div>
         </article>`).join('');
@@ -102,7 +108,7 @@ function renderNews(filter = 'all') {
 function fetchMarketData() {
     fetch(EXCHANGE_RATE_API).then(res => res.json()).then(data => {
         const bar = document.getElementById('market-bar');
-        if (bar) bar.innerHTML = `<div style="text-align:center;font-size:12px;padding:5px;">실시간 환율: 1달러 = <b>${data.rates.KRW.toFixed(2)}원</b> (제공: Open API)</div>`;
+        if (bar) bar.innerHTML = `<div style="text-align:center;font-size:12px;padding:5px;color:white;">실시간 환율: 1달러 = <b>${data.rates.KRW.toFixed(2)}원</b> (제공: Open API)</div>`;
     }).catch(e => console.error(e));
 }
 
