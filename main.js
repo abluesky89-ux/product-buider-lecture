@@ -3,12 +3,10 @@ const EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/USD";
 
 let newsData = [];
 const termData = [
-    { id: 1, term: '금리', definition: '돈을 빌린 대가로 내는 이자의 비율', easyExplainer: '돈의 가격이라고 생각하면 쉬워요.' },
-    { id: 2, term: '인플레이션', definition: '물가가 오르고 돈의 가치가 떨어지는 현상', easyExplainer: '과자값이 오르는 게 인플레이션이에요.' },
-    { id: 3, term: '환율', definition: '우리나라 돈과 다른 나라 돈을 바꾸는 비율', easyExplainer: '1달러를 사기 위해 필요한 우리 돈의 양이에요.' }
+    { id: 1, term: '금리', definition: '돈의 가격', easyExplainer: '이자율이 낮아지면 대출받기 쉬워져요.' },
+    { id: 2, term: '인플레이션', definition: '물가 상승', easyExplainer: '돈의 가치가 떨어지는 현상이에요.' }
 ];
 
-// 뉴스 주제 확장 (6개)
 const newsTitles = [
     { title: "엔비디아 주가 역대 최고치 경신, AI 칩 독점의 힘", cat: 'tech', catName: '테크/산업' },
     { title: "미국 연준 금리 동결, 시장은 하반기 인하 기대", cat: 'macro', catName: '거시경제' },
@@ -18,18 +16,23 @@ const newsTitles = [
     { title: "청년층 생애 첫 주택 구매 비중 역대 최고 기록", cat: 'realestate', catName: '부동산' }
 ];
 
-async function summarizeWithAI(title) {
-    const prompt = `News: "${title}". 초등학생 수준 요약. JSON format ONLY: {"summary": [{"text": "요약1"}, {"text": "요약2"}, {"text": "요약3"}], "insight": "기사 내용을 아주 쉽게 풀어서 투자자나 일반인에게 주는 실질적인 조언이나 관점(인사이트)을 작성해줘"}`;
+async function summarizeWithAI(item, index) {
+    const prompt = `News: "${item.title}". 초등학생 수준 요약. JSON format ONLY: {"summary": [{"text": "요약1"}, {"text": "요약2"}, {"text": "요약3"}], "insight": "기사 내용을 아주 쉽게 풀어서 투자자나 일반인에게 주는 실질적인 조언이나 관점(인사이트)을 작성해줘"}`;
     try {
         const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
-        const data = await res.json();
-        if (!data.candidates || !data.candidates[0].content.parts[0].text) return null;
+        const data = await response = await res.json();
         const text = data.candidates[0].content.parts[0].text;
         const match = text.match(/\{[\s\S]*\}/);
-        return match ? JSON.parse(match[0]) : null;
+        if (match) {
+            const result = JSON.parse(match[0]);
+            return {
+                id: index, category: item.cat, categoryName: item.catName,
+                title: item.title, summary: result.summary, insight: result.insight, isHero: index === 0
+            };
+        }
     } catch (e) { return null; }
 }
 
@@ -37,22 +40,22 @@ async function init() {
     updateDate();
     fetchMarketData();
     const container = document.getElementById('news-grid');
-    if (container) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:40px;'><h3>실시간 AI 인사이트를 도출하고 있습니다...</h3><p>잠시만 기다려 주세요 (6개의 뉴스를 정밀 분석 중)</p></div>";
+    if (container) container.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:40px;'><h3>실시간 AI 인사이트를 도출하고 있습니다...</h3><p>병렬 분석 기술로 속도를 높이는 중입니다. (약 3~5초)</p></div>";
 
-    for (let i = 0; i < newsTitles.length; i++) {
-        const res = await summarizeWithAI(newsTitles[i].title);
-        if (res) {
-            newsData.push({
-                id: i, category: newsTitles[i].cat,
-                categoryName: newsTitles[i].catName,
-                title: newsTitles[i].title, 
-                summary: res.summary, 
-                insight: res.insight, 
-                isHero: i === 0
-            });
-            renderNews(); 
-        }
+    // 병렬 실행 (Promise.all) 으로 속도 최적화
+    const promises = newsTitles.map((item, idx) => summarizeWithAI(item, idx));
+    const results = await Promise.all(promises);
+    
+    newsData = results.filter(r => r !== null);
+    
+    if (newsData.length === 0) {
+        // 모든 AI 호출 실패 시 기본 데이터 로드 (백업)
+        newsData = newsTitles.map((item, idx) => ({
+            id: idx, category: item.cat, categoryName: item.catName, title: item.title,
+            summary: [{text: '데이터를 불러오는 중입니다.'}], insight: '현재 기사 분석이 지연되고 있습니다. 잠시 후 새로고침 해주세요.', isHero: idx === 0
+        }));
     }
+    renderNews();
 }
 
 function renderNews(filter = 'all') {
@@ -75,10 +78,10 @@ function renderNews(filter = 'all') {
             <div class="hero-card">
                 <div class="hero-content">
                     <span class="hero-category">${heroNews.categoryName}</span>
-                    <h2 style="margin:10px 0; font-size: 24px;">${heroNews.title}</h2>
-                    <ul style="margin-bottom:15px; padding-left:20px; font-size: 15px;">${heroNews.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
+                    <h2 style="margin:10px 0;">${heroNews.title}</h2>
+                    <ul style="margin-bottom:15px; padding-left:20px;">${heroNews.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
                     <div class="insight-box" style="background: #eef2f7; border-left: 5px solid #3498db;">
-                        <b style="color:#2980b9;">📢 AI 인사이트:</b> ${heroNews.insight}
+                        <b>📢 AI 인사이트:</b> ${heroNews.insight}
                     </div>
                 </div>
             </div>`;
@@ -88,10 +91,10 @@ function renderNews(filter = 'all') {
     container.innerHTML = gridNews.map(n => `
         <article class="news-card">
             <span class="category-tag">${n.categoryName}</span>
-            <h3 style="margin:10px 0; font-size: 18px;">${n.title}</h3>
-            <ul style="margin-bottom:15px; padding-left:20px; font-size: 14px; color: #555;">${n.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
-            <div class="insight-box" style="font-size: 14px;">
-                <b style="color:#2980b9;">📢 AI 인사이트:</b><br>${n.insight}
+            <h3 style="margin:10px 0;">${n.title}</h3>
+            <ul style="margin-bottom:15px; padding-left:20px; color: #555;">${n.summary.map(s => `<li>${s.text}</li>`).join('')}</ul>
+            <div class="insight-box">
+                <b>📢 AI 인사이트:</b><br>${n.insight}
             </div>
         </article>`).join('');
 }
@@ -112,9 +115,9 @@ window.showPolicy = function(type) {
     const modal = document.getElementById('detail-modal');
     const body = document.getElementById('modal-body');
     const content = {
-        about: "<h2>서비스 소개</h2><p>TJ Economy Insight는 AI 기술을 활용하여 복잡한 경제 뉴스를 누구나 이해하기 쉽게 요약하여 전달하는 뉴스 플랫폼입니다.</p>",
-        privacy: "<h2>개인정보처리방침</h2><p>본 서비스는 뉴스레터 구독 시 외에는 어떠한 개인정보도 수집하지 않습니다.</p>",
-        terms: "<h2>이용약관</h2><p>제공되는 정보는 투자 참고용이며 최종 책임은 본인에게 있습니다.</p>",
+        about: "<h2>서비스 소개</h2><p>TJ Economy Insight는 AI로 경제 뉴스를 요약 전달합니다.</p>",
+        privacy: "<h2>개인정보처리방침</h2><p>개인정보를 수집하지 않습니다.</p>",
+        terms: "<h2>이용약관</h2><p>모든 정보는 투자 참고용입니다.</p>",
         contact: "<h2>문의하기</h2><p>Email: contact@tjinsight.com</p>"
     };
     body.innerHTML = content[type] || "내용을 찾을 수 없습니다.";
